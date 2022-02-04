@@ -1,9 +1,9 @@
 FROM python:latest
 
-COPY app.py 
+COPY app.py app.py
 
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
+COPY requirements.txt requirements.txt
 
-EXPOSE 8080
+RUN pip install -r requirements.txt
 
 ENTRYPOINT [ "python", "app.py" ]
