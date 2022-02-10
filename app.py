@@ -1,43 +1,39 @@
 from flask import Flask, request
-from pyfiglet import Figlet
+import pyfiglet
 import requests
 import logging
 import sys
 import os
 
 
-
-def hello():
-    h = Figlet(font="slant")
-    print(h.renderText("HTTP CHAT"))
+logo = pyfiglet.figlet_format('HTTP CHAT', font="slant")
 
 
 if len(sys.argv) == 2:
     app = Flask(__name__)
 
-    hello()
+    print(logo)
     print('Listening on port %s (Press CTRL+C to quit)' % str(sys.argv[1]))
 
     logging.getLogger("werkzeug").disabled = True
     os.environ["WERKZEUG_RUN_MAIN"] = "true"
 
-    @app.route('/', methods=['GET', 'POST'])
+    @app.route('/', methods=['POST'])
     def chat():
-        if request.method == 'POST':
-            request_data = request.get_json(force=True)
-            print(request_data)
+        request_data = request.get_data(as_text=True)
+        print(request_data)
         return request_data
     app.run(port=sys.argv[1], host='0.0.0.0',use_reloader=False)
     print('\nGoodbye!')
     
 elif len(sys.argv) == 3:
     try:
-        hello()
+        print(logo)
         username = input("Enter username:")
         print('=====[TO EXIT CTRL+C]=====')
         while True:
             data = input('Message: \n')
-            r = requests.post(url='http://%s:%s/' % (sys.argv[1],sys.argv[2]), json='[%s] - %s' % (username,data))
+            r = requests.post(url='http://%s:%s/' % (sys.argv[1],sys.argv[2]), data='[%s] - %s\n' % (username, data))
     except requests.exceptions.ConnectionError as e:
         print('Server is not available!')
         print(e)
